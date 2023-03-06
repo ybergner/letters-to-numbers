@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css"
+    />
+    <link rel="stylesheet" href="ltnstyl.css" />
+
+    <title>Letters to Numbers</title>
+  </head>
+  <body>
+    <div class="container">
+      <!-- <header> -->
+      <h1 class="title">Letters to Numbers</h1>
+
+      <div class="timer subtitle" id="timer">10:00</div>
+      <!-- </header> -->
+
+      <!-- <main> -->
+      <div class="columns">
+        <div class="column is-7">
+          <h2 class="subtitle">Step 1: Equation</h2>
+
+          <div class="field has-addons">
+            <div class="control is-expanded">
+              <input
+                class="input"
+                type="text"
+                id="testequation"
+                placeholder="Equation (e.g., A + B)"
+              />
+            </div>
+            <div class="control">
+              <a class="button is-info" id="blueeqn"> Test </a>
+            </div>
+            <div class="control">
+              <a class="button is-success" id="greeneqn"> Test </a>
+            </div>
+            <div class="control">
+              <a class="button is-danger" id="redeqn"> Test </a>
+            </div>
+          </div>
+
+          <h2 class="subtitle">Step 2: Hypothesis</h2>
+          <div class="field has-addons">
+            <div class="control is-expanded">
+              <input
+                class="input"
+                type="text"
+                id="testhypothesis"
+                placeholder="Hypothesis (e.g., A  = 1)"
+              />
+            </div>
+            <div class="control">
+              <a class="button is-info is-static" id="bluehyp"> Guess </a>
+            </div>
+            <div class="control">
+              <a class="button is-success is-static" id="greenhyp"> Guess </a>
+            </div>
+
+            <div class="control">
+              <a class="button is-danger is-static" id="redhyp"> Guess </a>
+            </div>
+          </div>
+
+          <h2 class="subtitle">Step 3: Complete Solution</h2>
+
+          <div class="columns">
+            <div class="column">
+              <div class="field">
+                <label class="label">A</label>
+                <div class="control">
+                  <input class="input" type="text" id="sol_0" placeholder="A" />
+                </div>
+              </div>
+            </div>
+            <div class="column">
+              <div class="field">
+                <label class="label">B</label>
+                <div class="control">
+                  <input class="input" type="text" id="sol_1" placeholder="B" />
+                </div>
+              </div>
+            </div>
+            <div class="column">
+              <div class="field">
+                <label class="label">C</label>
+                <div class="control">
+                  <input class="input" type="text" id="sol_2" placeholder="C" />
+                </div>
+              </div>
+            </div>
+            <div class="column">
+              <div class="field">
+                <label class="label">D</label>
+                <div class="control">
+                  <input class="input" type="text" id="sol_3" placeholder="D" />
+                </div>
+              </div>
+            </div>
+            <div class="column">
+              <div class="field">
+                <label class="label">E</label>
+                <div class="control">
+                  <input class="input" type="text" id="sol_4" placeholder="E" />
+                </div>
+              </div>
+            </div>
+            <!-- </div> -->
+
+            <!-- <div class="columns"> -->
+            <div class="column">
+              <div class="field">
+                <label class="label">F</label>
+                <div class="control">
+                  <input class="input" type="text" id="sol_5" placeholder="F" />
+                </div>
+              </div>
+            </div>
+            <div class="column">
+              <div class="field">
+                <label class="label">G</label>
+                <div class="control">
+                  <input class="input" type="text" id="sol_6" placeholder="G" />
+                </div>
+              </div>
+            </div>
+            <div class="column">
+              <div class="field">
+                <label class="label">H</label>
+                <div class="control">
+                  <input class="input" type="text" id="sol_7" placeholder="H" />
+                </div>
+              </div>
+            </div>
+            <div class="column">
+              <div class="field">
+                <label class="label">I</label>
+                <div class="control">
+                  <input class="input" type="text" id="sol_8" placeholder="I" />
+                </div>
+              </div>
+            </div>
+            <div class="column">
+              <div class="field">
+                <label class="label">J</label>
+                <div class="control">
+                  <input class="input" type="text" id="sol_9" placeholder="J" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="field has-addons">
+            <div class="control is-expanded"></div>
+            <div class="control">
+              <a class="button is-info is-static" id="bluesol"> Solve </a>
+            </div>
+            <div class="control">
+              <a class="button is-success is-static" id="greensol"> Solve </a>
+            </div>
+
+            <div class="control">
+              <a class="button is-danger is-static" id="redsol"> Solve </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="column is-narrow">
+          <h2>Results</h2>
+          <table class="table is-bordered is-striped is-narrow" id="results">
+            <thead>
+              <tr>
+                <th>Trial</th>
+                <th>Equation</th>
+                <th>Hypothesis</th>
+                <th>Feedback</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr id="res1">
+                <th>1</th>
+                <td id="equation_1"></td>
+                <td id="hypothesis_1"></td>
+                <td id="feedback_1"></td>
+              </tr>
+              <tr id="res2">
+                <th>2</th>
+                <td id="equation_2"></td>
+                <td id="hypothesis_2"></td>
+                <td id="feedback_2"></td>
+              </tr>
+              <tr id="res3">
+                <th>3</th>
+                <td id="equation_3"></td>
+                <td id="hypothesis_3"></td>
+                <td id="feedback_3"></td>
+              </tr>
+              <tr id="res4">
+                <th>4</th>
+                <td id="equation_4"></td>
+                <td id="hypothesis_4"></td>
+                <td id="feedback_4"></td>
+              </tr>
+              <tr id="res5">
+                <th>5</th>
+                <td id="equation_5"></td>
+                <td id="hypothesis_5"></td>
+                <td id="feedback_5"></td>
+              </tr>
+              <tr id="res6">
+                <th>6</th>
+                <td id="equation_6"></td>
+                <td id="hypothesis_6"></td>
+                <td id="feedback_6"></td>
+              </tr>
+              <tr id="res7">
+                <th>7</th>
+                <td id="equation_7"></td>
+                <td id="hypothesis_7"></td>
+                <td id="feedback_7"></td>
+              </tr>
+              <tr id="res8">
+                <th>8</th>
+                <td id="equation_8"></td>
+                <td id="hypothesis_8"></td>
+                <td id="feedback_8"></td>
+              </tr>
+              <tr id="res9">
+                <th>9</th>
+                <td id="equation_9"></td>
+                <td id="hypothesis_9"></td>
+                <td id="feedback_9"></td>
+              </tr>
+              <tr id="res10">
+                <th>10</th>
+                <td id="equation_10"></td>
+                <td id="hypothesis_10"></td>
+                <td id="feedback_10"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- </main> -->
+
+    <!-- Optional JavaScript -->
+
+    <script src="answers.js"></script>
+    <script src="l2nscript.js"></script>
+
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  </body>
+</html>
