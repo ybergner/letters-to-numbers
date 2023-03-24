@@ -1,0 +1,12 @@
+#accepteddiv{
+    display: flex;
+    flex-direction: row;
+    column-gap: 0.2rem;
+}
+
+#accepteddiv>div{
+    --box-size: 1.2rem;
+    width: var(--box-size);
+    height: var(--box-size);
+    border-radius: 3px;
+}

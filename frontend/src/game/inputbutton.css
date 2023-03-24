@@ -1,0 +1,39 @@
+.inputbutton{
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.inputbutton[data-enabled=false]{
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+.inputbutton > div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 2.5rem;
+}
+
+.inputbutton > div > *{
+    height: 100%;
+
+}
+
+.inputbutton input{
+    outline: none;
+    border: 1px solid gray;
+    border-radius: 4px;
+    border-bottom-right-radius: 0;
+    border-top-right-radius: 0;
+}
+
+.inputbutton > div > .button{
+    background-color: var(--player-color);
+}
+
+.inputbutton #accepteddiv{
+    position: absolute;
+    left: 30%;
+}

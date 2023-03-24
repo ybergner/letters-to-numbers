@@ -1,0 +1,19 @@
+#resulttable{
+    display: flex;
+    flex-direction: column;
+    width: 20rem;
+}
+
+#resulttable table, td, th{
+    border: 1px solid #dbdbdb;
+    border-collapse: collapse;
+    line-height: 1.5;
+}
+
+th{
+    text-align: left;
+}
+
+th, td{
+    padding: 0.25em 0.5em;
+}
