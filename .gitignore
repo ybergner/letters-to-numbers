@@ -105,4 +105,3 @@ dist
 
 frontend/dist
 frontend/node_modules
-./index.html
