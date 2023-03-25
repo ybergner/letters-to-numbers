@@ -4,6 +4,7 @@ import ws from 'ws'
 import { handleSinglePlayer } from './singleplayer';
 import { COLORS } from './shared';
 import { handleMultiplayer } from './mutliplayer';
+import path from 'path'
 
 const app = express();
 
@@ -45,9 +46,9 @@ wss.on('connection', (ws, req) => {
   }
   ws.close(1000, "Wrong websocket path")
 });
-
+const appPath = process.cwd()
 app.get('/', (_, res) => {
-  res.sendFile("/home/kitac/Desktop/letters-to-numbers/backend/index.html")
+  res.sendFile(path.join(appPath, "index.html"))
 })
 
 const PORT = process.env.PORT || 3000;
