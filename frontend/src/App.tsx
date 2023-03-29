@@ -1,10 +1,17 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
 import { Button } from './components/button/button'
 import { Game } from './game/game'
 import { COLORS, ColorType, SessionEndData } from './shared'
 
+export const SessionLocalItem = "sessionData"
+export interface LocalStorageInfo {
+  sessionId:string,
+  color:string
+}
+
 function App() {
+
   const [selectedMode, setSelectedMode] = useState<"singleplayer"|"multiplayer"|undefined>(undefined)
   const [selectedColor, setSelectedColor] = useState<ColorType|undefined>(undefined)
   const [exitData, setExitData] = useState<SessionEndData|undefined>(undefined)
@@ -18,6 +25,14 @@ function App() {
     else if(exitData?.reason === "wrongcolor")return `Color already selected by another player`
     return 'Unkown'
   }
+
+  useEffect(() => {
+    const localStorageItem = window.localStorage.getItem(SessionLocalItem)
+    if(localStorageItem === null)return;
+    const parsedJson = JSON.parse(localStorageItem) as LocalStorageInfo
+    setSelectedColor(parsedJson.color as ColorType)
+    setSelectedMode("multiplayer");
+  })
 
   return (
     (selectedMode !== undefined && selectedColor !== undefined)?

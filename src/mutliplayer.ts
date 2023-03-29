@@ -37,7 +37,7 @@ export const currentMutliplayerSession:GameSession = {
     results: generateSessionResultLocalWtf(),
     sessionTimer: GAME_START_TIME,
     testTries: [],
-    internvalId: undefined,
+    //internvalId: undefined,
     currentTextInput: '',
     gameStep: GameStep.PlayersConnecting,
     mode: "multiplayer"

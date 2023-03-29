@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "build:frontend": "npm run build --prefix frontend",
-    "start:dev": "nodemon --exec ts-node src/index.ts",
+    "dev": "nodemon --exec ts-node src/index.ts",
     "start": "node dist/index.js",
     "build": "tsc"
   },
@@ -19,7 +19,8 @@
     "@types/ws": "^8.5.4",
     "express": "^4.18.2",
     "nodemon": "^2.0.21",
-    "typescript": "^4.9.5"
+    "typescript": "^4.9.5",
+    "ts-node": "^10.9.1"
   },
   "dependencies": {
     "uuid": "^9.0.0",

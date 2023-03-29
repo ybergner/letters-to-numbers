@@ -11,7 +11,7 @@ export interface GameSession{
     results:number[],
     testTries:TestTry[]
     sessionTimer:number
-    internvalId:NodeJS.Timeout|undefined,
+    //internvalId:NodeJS.Timeout|undefined,
     finished:boolean,
     id:string,
     players:SessionPlayer[],
@@ -23,7 +23,7 @@ export interface GameSession{
 
 export function sessionSendAll(session:GameSession, data:any){
     const json = JSON.stringify(data)
-    session.players.forEach(player => player.socket.send(json))
+    session.players.forEach(player => player.socket?.send(json))
 }
 
 function getLetterNumber(letter:string, session:GameSession){
@@ -102,7 +102,7 @@ export function endSession(session:GameSession, endSessionReason:SessionEndReaso
     if(isMultiplayerSession)
         session.finished = true
 
-    clearTimeout(session.internvalId)
+    //clearTimeout(session.internvalId)
     
     if(endSessionReason !== 'playerdisconnect')
     {
@@ -115,7 +115,7 @@ export function endSession(session:GameSession, endSessionReason:SessionEndReaso
     }
     const endJson = JSON.stringify(closeReason)
     session.players.forEach(player => {
-        player.socket.close(1000, endJson)
+        player.socket?.close(1000, endJson)
     })
     
     if(isMultiplayerSession){
@@ -124,7 +124,7 @@ export function endSession(session:GameSession, endSessionReason:SessionEndReaso
         currentMutliplayerSession.currentTextInput = ''
         currentMutliplayerSession.players = []
         currentMutliplayerSession.finished = false
-        currentMutliplayerSession.internvalId = undefined
+        //currentMutliplayerSession.internvalId = undefined
         currentMutliplayerSession.gameStep = GameStep.PlayersConnecting
         currentMutliplayerSession.testTries = []
         currentMutliplayerSession.sessionTimer = GAME_START_TIME
@@ -132,12 +132,12 @@ export function endSession(session:GameSession, endSessionReason:SessionEndReaso
 }
 
 export function startSessionTimer(session:GameSession){
-    session.internvalId = setInterval(() => {
+    /*session.internvalId = setInterval(() => {
         session.sessionTimer -= 1
         if(session.sessionTimer <= 0){
             endSession(session, 'time')
         }
-    }, 1000);
+    }, 1000);*/
 }
 
 
@@ -279,7 +279,7 @@ function acceptInput(session:GameSession, player: SessionPlayer){
             })
             sessionSendAll(session, {
                 type: 'badFormat',
-                alert: 'Bad guess. Try again.'
+                alert: 'The proposed solution is incorrect, please try again'
             })
         }
         if(isSame){

@@ -27,16 +27,18 @@
   width: 4.5rem;
   height: 2rem;
   border-radius: 6px;
+  opacity: 0.4;
 }
 
 #choose-color > div:hover{
   cursor: pointer;
   opacity: 0.7;
   border-radius: 4px;
+  
 }
 
 #choose-color > div.selected{
-  border: 2px solid black;
+  opacity: 1;
 }
 
 

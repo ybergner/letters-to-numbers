@@ -45,7 +45,7 @@ export function handleSinglePlayer(connection:ws.WebSocket, color:string){
         results: generateSessionResult(),
         sessionTimer: GAME_START_TIME,
         testTries: [],
-        internvalId: undefined,
+        //internvalId: undefined,
         currentTextInput: '',
         gameStep: GameStep.Equation,
         mode: "singleplayer"

@@ -8,6 +8,7 @@ import './inputbutton.css'
 import './resultinput.css'
 import { AcceptedDiv } from '../components/accepteddiv/accepteddiv'
 import { ColorType, GameStep, InitSession, ResultInputNumber, ResultInputType, SessionEndData, TestTry } from '../shared'
+import { SessionLocalItem } from '../App'
 
 const PlayerColor = new SharedStateToken<string>("red")
 export const PlayersThatAcceptedInput = new SharedStateToken<string[]>([])
@@ -35,8 +36,8 @@ export class Game extends React.Component<{mode:"singleplayer"|"multiplayer", co
     connectedColors:ColorType[],
     sessionStared:boolean
 }>{
-    timerInternvalId?:any
-    webSocket:WebSocket = new WebSocket("ws://localhost:3000/" + this.props.mode + "/" + this.props.color)
+    //timerInternvalId?:any
+    webSocket:WebSocket
     constructor(props:any){
         ResultInputToken.setValue({
             A: undefined,
@@ -63,7 +64,7 @@ export class Game extends React.Component<{mode:"singleplayer"|"multiplayer", co
             connectedColors: [],
             sessionStared: false
         }
-
+        this.webSocket = new WebSocket("ws://localhost:3000/" + this.props.mode + "/" + this.props.color)
         this.webSocket.onmessage = (e) => this.onMessage(e)
         this.webSocket.onclose = (e) => {
             if(e.code !== 1000){
@@ -72,6 +73,7 @@ export class Game extends React.Component<{mode:"singleplayer"|"multiplayer", co
                     sessionId: this.state.sessionId
                 })
             }
+            window.localStorage.removeItem(SessionLocalItem)
             let reasonFromJson:SessionEndData = JSON.parse(e.reason)
             console.log(reasonFromJson)
             this.props.onExit(reasonFromJson)
@@ -92,6 +94,10 @@ export class Game extends React.Component<{mode:"singleplayer"|"multiplayer", co
         else if(messageType === "sessionInit"){
             console.log("Got init data")
             const sessionInitData = data.session as InitSession
+            window.localStorage.setItem(SessionLocalItem, JSON.stringify({
+                id: sessionInitData.id,
+                color: data.color
+            }))
             PlayerColor.setValue(data.color)
             this.setState({
                 connecting: false,
@@ -102,10 +108,10 @@ export class Game extends React.Component<{mode:"singleplayer"|"multiplayer", co
                 connectedColors: [],
                 sessionStared: sessionInitData.gameStep !==  GameStep.PlayersConnecting
             })
-            if(sessionInitData.gameStep !== GameStep.PlayersConnecting)
+            /*if(sessionInitData.gameStep !== GameStep.PlayersConnecting)
                 this.timerInternvalId = setInterval(() => {
                     this.setState({timer: this.state.timer-1})
-                }, 1000)
+                }, 1000)*/
         }
         else if(messageType === "inputUpdate"){
             PlayersThatAcceptedInput.setValue([])
@@ -181,7 +187,10 @@ export class Game extends React.Component<{mode:"singleplayer"|"multiplayer", co
             <div id="game-input">
                 <h1>Letters to numbers </h1>
                 <p id="player-color">Your color is <span style={{color: `var(--player-color)`}}>{PlayerColor.value}</span></p>
-                <h2 id="timeLeft">Time left: {this.state.sessionStared? isOver? "TIME'S UP!" : `${mins}:${secs}` : "Session not started yet."}</h2>
+                
+                {
+                    //<h2 id="timeLeft">Time left: {this.state.sessionStared? isOver? "TIME'S UP!" : `${mins}:${secs}` : "Session not started yet."}</h2>
+                }
                 <span id="sessionId">SessionId: <span>{this.state.sessionId ?? "unknown"}</span></span>
                 {
                     this.state.sessionStared?
