@@ -1,4 +1,4 @@
-import { GameSession, SessionMode } from "./session";
+import { GameSession } from "./session";
 import { GameStep, SessionEndReason, TestTry } from "./shared";
 import fs, { mkdir } from 'fs'
 import path from 'path'
@@ -11,8 +11,7 @@ interface SessionLog{
     endTimer:number,
     sessionId:string,
     endedOnStep:GameStep,
-    time: Date,
-    mode: SessionMode
+    time: Date
 }
 function mkDirFunc(dir:string){
     if (!fs.existsSync(dir)){
@@ -34,8 +33,7 @@ export function logSession(session:GameSession, endReason:SessionEndReason){
         results: session.results,
         sessionId: session.id,
         tries: session.testTries,
-        time: nowDate,
-        mode: session.mode
+        time: nowDate
     }
     const currentDayDir = `${nowDate.getFullYear()}-${nowDate.getMonth()}-${nowDate.getDay()}`
     const fileDir =  path.join(logsFolder, currentDayDir)

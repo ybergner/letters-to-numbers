@@ -8,7 +8,7 @@ import './inputbutton.css'
 import './resultinput.css'
 import { AcceptedDiv } from '../components/accepteddiv/accepteddiv'
 import { ColorType, GameStep, InitSession, ResultInputNumber, ResultInputType, SessionEndData, TestTry } from '../shared'
-import { SessionLocalItem } from '../App'
+import { LocalStorageInfo, SessionLocalItem } from '../App'
 
 const PlayerColor = new SharedStateToken<string>("red")
 export const PlayersThatAcceptedInput = new SharedStateToken<string[]>([])
@@ -27,7 +27,7 @@ const ResultInputToken = new SharedStateToken<ResultInputType>({
     })
 const ALL_LETTERS = 'ABCDEFGHIJ'
 const ALL_NUMBERS = '1234567890'
-export class Game extends React.Component<{mode:"singleplayer"|"multiplayer", color: ColorType, onExit:(endData:SessionEndData)=>void}, {
+export class Game extends React.Component<{playerCount:number, color: ColorType, onExit:(endData:SessionEndData)=>void}, {
     resultArray:TestTry[],
     connecting:boolean,
     timer:number,
@@ -38,6 +38,7 @@ export class Game extends React.Component<{mode:"singleplayer"|"multiplayer", co
 }>{
     //timerInternvalId?:any
     webSocket:WebSocket
+    reconnecting:boolean
     constructor(props:any){
         ResultInputToken.setValue({
             A: undefined,
@@ -64,7 +65,12 @@ export class Game extends React.Component<{mode:"singleplayer"|"multiplayer", co
             connectedColors: [],
             sessionStared: false
         }
-        this.webSocket = new WebSocket("ws://localhost:3000/" + this.props.mode + "/" + this.props.color)
+        const savedSessionJson = window.localStorage.getItem(SessionLocalItem)
+        const savedSession = savedSessionJson == null ? undefined : JSON.parse(savedSessionJson) as LocalStorageInfo
+        this.reconnecting = savedSession !== undefined
+        const link = savedSession !== undefined? `reconnect/${savedSession.sessionId}/${savedSession.color}` : `connect/${this.props.playerCount}/${this.props.color}`
+
+        this.webSocket = new WebSocket("ws://localhost:3000/" + link)
         this.webSocket.onmessage = (e) => this.onMessage(e)
         this.webSocket.onclose = (e) => {
             if(e.code !== 1000){
@@ -94,10 +100,11 @@ export class Game extends React.Component<{mode:"singleplayer"|"multiplayer", co
         else if(messageType === "sessionInit"){
             console.log("Got init data")
             const sessionInitData = data.session as InitSession
-            window.localStorage.setItem(SessionLocalItem, JSON.stringify({
-                id: sessionInitData.id,
-                color: data.color
-            }))
+            const storageData :LocalStorageInfo = {
+                color: data.color,
+                sessionId: sessionInitData.id
+            }
+            window.localStorage.setItem(SessionLocalItem, JSON.stringify(storageData))
             PlayerColor.setValue(data.color)
             this.setState({
                 connecting: false,
@@ -181,7 +188,7 @@ export class Game extends React.Component<{mode:"singleplayer"|"multiplayer", co
 
         return this.state.connecting?
         <div id="connecting">
-            <h1>Connecting to the server...</h1>
+            <h1>{this.reconnecting? "Reconnecting" : "Connecting"} to the server...</h1>
         </div>:
         <div id="game" style={{"--player-color" : `var(--color-${PlayerColor.value})`} as React.CSSProperties}>
             <div id="game-input">

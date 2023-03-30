@@ -47,6 +47,27 @@
   pointer-events: none;
 }
 
+#choose-mode > span{
+  width: 2.5rem;
+  height: 2.5rem;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+}
+
+#choose-mode > span:hover{
+  opacity: 0.7;
+  cursor: pointer;
+  border-radius: 2px;
+}
+
+#choose-mode > span > span{
+  font-size: 1rem;
+  color: white;
+}
+
 
 #exitinfo{
   display: flex;

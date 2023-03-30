@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import './App.css'
-import { Button } from './components/button/button'
 import { Game } from './game/game'
 import { COLORS, ColorType, SessionEndData } from './shared'
 
@@ -9,10 +8,10 @@ export interface LocalStorageInfo {
   sessionId:string,
   color:string
 }
-
+const MAX_PLAYER_COUNT = 4;
 function App() {
 
-  const [selectedMode, setSelectedMode] = useState<"singleplayer"|"multiplayer"|undefined>(undefined)
+  const [selectedMode, setSelectedMode] = useState<number|undefined>(undefined)
   const [selectedColor, setSelectedColor] = useState<ColorType|undefined>(undefined)
   const [exitData, setExitData] = useState<SessionEndData|undefined>(undefined)
 
@@ -23,6 +22,8 @@ function App() {
     else if(exitData?.reason === 'time')return 'You ran out of time'
     else if(exitData?.reason === 'trycount')return 'You ran out of tries'
     else if(exitData?.reason === "wrongcolor")return `Color already selected by another player`
+    else if(exitData?.reason === "connecterror") return "Error connecting to the session"
+    else if(exitData?.reason === "sessionnolongerexists")return "Session no longer exists"
     return 'Unkown'
   }
 
@@ -31,12 +32,12 @@ function App() {
     if(localStorageItem === null)return;
     const parsedJson = JSON.parse(localStorageItem) as LocalStorageInfo
     setSelectedColor(parsedJson.color as ColorType)
-    setSelectedMode("multiplayer");
+    setSelectedMode(1);
   })
 
   return (
     (selectedMode !== undefined && selectedColor !== undefined)?
-    <Game mode={selectedMode} color={selectedColor} onExit={(e) => {
+    <Game playerCount={selectedMode} color={selectedColor} onExit={(e) => {
       setExitData(e)
       setSelectedMode(undefined)
     }}/>:
@@ -53,10 +54,14 @@ function App() {
             onClick={() => setSelectedColor(color === selectedColor? undefined : color)}></div>)
         }
       </div>
-      <h1>Play</h1>
+      <h1>Player Count</h1>
       <div id="choose-mode" data-enabled={selectedColor !== undefined}>
-        <Button text='Singleplayer' onClick={() => setSelectedMode('singleplayer')}/>
-        <Button text='Multiplayer' onClick={() => setSelectedMode('multiplayer')} id="mode-multiplayer"/>
+        {
+          COLORS.map((_, index) => {
+
+            return <span key={index} onClick={() => setSelectedMode(index+1)} style={{backgroundColor: selectedColor == undefined? "gray" : `var(--color-${selectedColor})`}}><span>{index+1}</span></span>
+          })
+        }
       </div>
       {
         exitData &&

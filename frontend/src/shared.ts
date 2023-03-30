@@ -1,8 +1,8 @@
 export const ALL_LETTERS = 'ABCDEFGHIJ'
 export const ALL_NUMBERS = '1234567890'
 
-export type ColorType = "red"|"green"|"blue"
-export const COLORS:ColorType[] = [ 'red', 'green', 'blue']
+export type ColorType = "red"|"green"|"blue"|'orange'
+export const COLORS:ColorType[] = [ 'red', 'green', 'blue', 'orange']
 
 export interface TestTry{
     equation:string,
@@ -28,7 +28,7 @@ export interface InitSession{
 }
 
 
-export type SessionEndReason = "time"|"trycount"|"sucess"|"inprogress"|"wrongcolor"|"playerdisconnect"
+export type SessionEndReason = "time"|"trycount"|"sucess"|"inprogress"|"wrongcolor"|"playerdisconnect"|"sessionnolongerexists"|"connecterror"
 export interface SessionEndData{
     reason: SessionEndReason,
     sessionId:string|undefined,

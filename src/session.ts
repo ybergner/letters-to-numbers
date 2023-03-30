@@ -1,12 +1,11 @@
-import { clearTimeout } from 'timers'
 import ws from 'ws'
-import { currentMutliplayerSession } from './mutliplayer'
 import { logSession } from './sessionLoggin'
 import { sendPlayer, SessionPlayer } from './sessionPlayer'
 import { v4 as uuidv4 } from 'uuid';
-import { ALL_LETTERS, ALL_NUMBERS, GameStep, ResultInputType, SessionEndData, SessionEndReason, TestTry } from './shared'
+import { ALL_LETTERS, ALL_NUMBERS, ColorType, GameStep, InitSession, ResultInputType, SessionEndData, SessionEndReason, TestTry } from './shared'
 import { GAME_START_TIME } from './consts'
-export type SessionMode = "singleplayer"|"multiplayer"
+import { sessionMap } from './index';
+
 export interface GameSession{
     results:number[],
     testTries:TestTry[]
@@ -18,7 +17,7 @@ export interface GameSession{
     currentTextInput:string,
     resultInput:ResultInputType,
     gameStep:GameStep,
-    mode:SessionMode
+    maxPlayers:number
 }
 
 export function sessionSendAll(session:GameSession, data:any){
@@ -37,6 +36,131 @@ function getNumberLetter(n:number, session:GameSession){
     if(index === -1)return '?'
 
     return ALL_LETTERS[index]
+}
+
+export function generateNewSession(maxPlayers:number){
+    const newSession : GameSession = {
+        currentTextInput: '',
+        finished: false,
+        gameStep: GameStep.PlayersConnecting,
+        id: uuidv4(),
+        maxPlayers: maxPlayers,
+        players: [],
+        resultInput: {
+            A: undefined,
+            B: undefined,
+            C: undefined,
+            D: undefined,
+            E: undefined,
+            F: undefined,
+            G: undefined,
+            H: undefined,
+            I: undefined,
+            J: undefined
+        },
+        results: generateSessionResult(),
+        sessionTimer: 1,
+        testTries: []
+    }
+    sessionMap.set(newSession.id, newSession)
+    return newSession
+}
+
+export function handlePlayerConnect(session:GameSession, connection:ws.WebSocket, color:ColorType){
+    //reconnect
+    let player:SessionPlayer|undefined = undefined
+    if(session.gameStep !== GameStep.PlayersConnecting){
+        const colorPlayerIndex = session.players.findIndex(x => x.color === color)
+        if(colorPlayerIndex === -1){
+            let reason: SessionEndData = {
+                reason: 'sessionnolongerexists',
+                sessionId: session.id
+            }
+            return connection.close(1000, JSON.stringify(reason))
+        }
+        player = session.players[colorPlayerIndex]
+        if(player.socket !== undefined){
+            let reason: SessionEndData = {
+                reason: 'wrongcolor',
+                sessionId: session.id
+            }
+            return connection.close(1000, JSON.stringify(reason))
+        }
+        player.socket = connection;
+    }
+    //connect
+    else{
+        //somebody has the same color
+        if(session.players.findIndex(player => player.color === color) !== -1){
+            let reason: SessionEndData = {
+                reason: 'wrongcolor',
+                sessionId: session.id
+            }
+            return connection.close(1000, JSON.stringify(reason))
+        }
+        player = {
+            color: color,
+            hasAccepted: false,
+            socket: connection
+        }
+        session.players.push(player)
+
+        const hasEnoughPlayersToStart = session.players.length >= session.maxPlayers
+        session.gameStep = hasEnoughPlayersToStart? GameStep.Equation : GameStep.PlayersConnecting
+
+        //start the session
+        if(hasEnoughPlayersToStart){
+            session.players.filter(pl => pl !== player).forEach(p => p.socket?.send(JSON.stringify({
+                type: 'sessionInit',
+                color: p.color,
+                session: {
+                    gameStep: session.gameStep,
+                    id: session.id,
+                    testTries: session.testTries,
+                    timer: session.sessionTimer
+                }
+            })))
+            startSessionTimer(session)
+        }
+    }
+
+    const sessionInitData : InitSession = {
+        gameStep: session.gameStep,
+        id: session.id,
+        testTries: session.testTries,
+        timer: session.sessionTimer
+    }
+    connection.send(JSON.stringify({
+        type: 'sessionInit',
+        color: player.color,
+        session: sessionInitData
+        
+    }))
+    sessionSendAll(session, {
+        type: 'connectedColors',
+        colors: session.players.map(pl => pl.color)
+    })
+    connection.onmessage = e => onMessage(e, session)
+    connection.onclose = () => {
+        if(session.gameStep === GameStep.PlayersConnecting){
+            const playerIndex = session.players.indexOf(player!)
+            if(playerIndex !== -1){
+                session.players.splice(playerIndex, 1)
+            }
+            sessionSendAll(session, {
+                type: 'connectedColors',
+                colors: session.players.map(pl => pl.color)
+            })
+            return;
+        }
+        console.log("Player disconnect", player!.color, session.id)
+        player!.socket = undefined
+        //game in progress
+        if(session.players.filter(x=> x.socket !== undefined).length === 0){
+            console.log("Ending session all players disconnected", session.id)
+            endSession(session, 'playerdisconnect')
+        }
+    }
 }
 
 export function generateSessionResult():number[]{
@@ -98,9 +222,6 @@ export function onMessage(e:ws.MessageEvent, session:GameSession){
 
 export function endSession(session:GameSession, endSessionReason:SessionEndReason){
     if(session.finished)return;
-    const isMultiplayerSession = session === currentMutliplayerSession
-    if(isMultiplayerSession)
-        session.finished = true
 
     //clearTimeout(session.internvalId)
     
@@ -117,18 +238,7 @@ export function endSession(session:GameSession, endSessionReason:SessionEndReaso
     session.players.forEach(player => {
         player.socket?.close(1000, endJson)
     })
-    
-    if(isMultiplayerSession){
-        currentMutliplayerSession.id = uuidv4()
-        currentMutliplayerSession.results = generateSessionResult()
-        currentMutliplayerSession.currentTextInput = ''
-        currentMutliplayerSession.players = []
-        currentMutliplayerSession.finished = false
-        //currentMutliplayerSession.internvalId = undefined
-        currentMutliplayerSession.gameStep = GameStep.PlayersConnecting
-        currentMutliplayerSession.testTries = []
-        currentMutliplayerSession.sessionTimer = GAME_START_TIME
-    }
+    sessionMap.delete(session.id)
 }
 
 export function startSessionTimer(session:GameSession){
