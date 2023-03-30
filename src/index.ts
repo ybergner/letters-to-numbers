@@ -1,10 +1,8 @@
 import http from 'http'
 import express from 'express'
 import ws from 'ws'
-import { handleSinglePlayer } from './singleplayer';
-import { COLORS, ColorType, GameStep, SessionEndData, SessionEndReason } from './shared';
-import { handleMultiplayer } from './mutliplayer';
 import path from 'path'
+import { COLORS, ColorType, GameStep, SessionEndData, SessionEndReason } from './shared';
 import { GameSession, handlePlayerConnect, generateNewSession } from './session';
 
 

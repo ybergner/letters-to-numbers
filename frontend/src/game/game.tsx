@@ -8,7 +8,7 @@ import './inputbutton.css'
 import './resultinput.css'
 import { AcceptedDiv } from '../components/accepteddiv/accepteddiv'
 import { ColorType, GameStep, InitSession, ResultInputNumber, ResultInputType, SessionEndData, TestTry } from '../shared'
-import { LocalStorageInfo, SessionLocalItem } from '../App'
+import { ISDEV, LocalStorageInfo, SessionLocalItem } from '../App'
 
 const PlayerColor = new SharedStateToken<string>("red")
 export const PlayersThatAcceptedInput = new SharedStateToken<string[]>([])
@@ -69,8 +69,12 @@ export class Game extends React.Component<{playerCount:number, color: ColorType,
         const savedSession = savedSessionJson == null ? undefined : JSON.parse(savedSessionJson) as LocalStorageInfo
         this.reconnecting = savedSession !== undefined
         const link = savedSession !== undefined? `reconnect/${savedSession.sessionId}/${savedSession.color}` : `connect/${this.props.playerCount}/${this.props.color}`
+        const url = ISDEV?
+            "ws://localhost:3000/":
+            "wss://letters-to-numbers.herokuapp.com/";
 
-        this.webSocket = new WebSocket("ws://localhost:3000/" + link)
+
+        this.webSocket = new WebSocket(url + link)
         this.webSocket.onmessage = (e) => this.onMessage(e)
         this.webSocket.onclose = (e) => {
             if(e.code !== 1000){

@@ -3,12 +3,13 @@ import './App.css'
 import { Game } from './game/game'
 import { COLORS, ColorType, SessionEndData } from './shared'
 
+export const ISDEV = process.env.NODE_ENV === "development"
+console.log("ISDEV", ISDEV)
 export const SessionLocalItem = "sessionData"
 export interface LocalStorageInfo {
   sessionId:string,
   color:string
 }
-const MAX_PLAYER_COUNT = 4;
 function App() {
 
   const [selectedMode, setSelectedMode] = useState<number|undefined>(undefined)
