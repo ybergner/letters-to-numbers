@@ -4,10 +4,10 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "build:frontend": "npm install && npm run build --prefix frontend",
+    "build:frontend": "cd ./frontend && npm install && npm run build && cd ../",
     "dev": "nodemon --exec ts-node src/index.ts",
     "start": "node dist/index.js",
-    "build": "npm run build:frontend && tsc"
+    "build": "tsc"
   },
   "keywords": [],
   "author": "",
