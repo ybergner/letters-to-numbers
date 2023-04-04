@@ -34,7 +34,8 @@ export class Game extends React.Component<{playerCount:number, color: ColorType,
     sessionId?:string,
     gameStep:GameStep,
     connectedColors:ColorType[],
-    sessionStared:boolean
+    sessionStared:boolean,
+    wantsToDisconnect:boolean
 }>{
     //timerInternvalId?:any
     webSocket:WebSocket
@@ -63,7 +64,8 @@ export class Game extends React.Component<{playerCount:number, color: ColorType,
             sessionId: undefined,
             gameStep: GameStep.Equation,
             connectedColors: [],
-            sessionStared: false
+            sessionStared: false,
+            wantsToDisconnect:false
         }
         const savedSessionJson = window.localStorage.getItem(SessionLocalItem)
         const savedSession = savedSessionJson == null ? undefined : JSON.parse(savedSessionJson) as LocalStorageInfo
@@ -77,6 +79,11 @@ export class Game extends React.Component<{playerCount:number, color: ColorType,
         this.webSocket = new WebSocket(url + link)
         this.webSocket.onmessage = (e) => this.onMessage(e)
         this.webSocket.onclose = (e) => {
+            console.log(e.code)
+            if(e.code === 4001){
+                window.localStorage.removeItem(SessionLocalItem)
+                return this.props.onExit({reason: 'youleft', sessionId: this.state.sessionId})
+            }
             if(e.code !== 1000){
                 return this.props.onExit({
                     reason: 'playerdisconnect',
@@ -232,6 +239,8 @@ export class Game extends React.Component<{playerCount:number, color: ColorType,
                             value: number,
                             letter
                         }))}/>
+
+                    
                     </>:
                     <div id="connectedcolors">
                         <p>Connected players</p>
@@ -241,6 +250,19 @@ export class Game extends React.Component<{playerCount:number, color: ColorType,
                             }
                         </div>
                     </div>
+                    
+                    
+                }
+                {
+                    this.state.wantsToDisconnect?
+                    <div id="disconnect">
+                        <p>Are you sure?</p>
+                        <Button text='Yes' onClick={() => {
+                            this.webSocket?.close(4001)
+                        }}/>
+                        <Button text='No' onClick={() => this.setState({ wantsToDisconnect:false})}/>
+                    </div>:
+                    <Button text='Disconnect' style={{backgroundColor: `var(--color-${this.props.color})`}} id='disconnect' onClick={() => this.setState({wantsToDisconnect:true})}/>
                 }
                 
 

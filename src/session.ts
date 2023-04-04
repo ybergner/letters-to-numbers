@@ -322,6 +322,7 @@ function acceptInput(session:GameSession, player: SessionPlayer){
         let equationStr = currentResult < 0? '-' : ''
         console.log(resultStr)
         for(let char of resultStr){
+            if(char == '-')continue;
             equationStr += getNumberLetter(parseInt(char), session)
         }
         session.testTries.push({

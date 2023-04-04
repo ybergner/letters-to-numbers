@@ -55,6 +55,12 @@
   align-items: center;
   justify-content: center;
   border-radius: 4px;
+  opacity: 0.5;
+  user-select: none;
+}
+
+#choose-mode > span.selected{
+  opacity: 1;
 }
 
 #choose-mode > span:hover{
@@ -83,4 +89,9 @@
 
 #exitinfo > p > span{
   user-select: all !important;
+}
+
+.button.disabled{
+  opacity: 0.7;
+  pointer-events: none;
 }

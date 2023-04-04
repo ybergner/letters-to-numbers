@@ -49,3 +49,34 @@
     height: 1.5rem;
     border-radius: 6px;
 }
+
+#disconnect{
+    margin-top: 4rem;
+    width: 6rem;
+}
+
+div#disconnect{
+    display: flex;
+    flex-direction: row;
+    column-gap: 1rem;
+    align-items: center;
+}
+
+div#disconnect > p{
+    width: 8rem;
+    max-width: 8rem;
+    min-width: 8rem;
+}
+
+div#disconnect > div{
+    height: 1.6rem;
+}
+
+div#disconnect > div:first-of-type{
+    background-color: red;
+    opacity: 0.6;
+}
+
+div#disconnect > div:last-of-type{
+    background-color: rgb(37, 170, 214);
+}

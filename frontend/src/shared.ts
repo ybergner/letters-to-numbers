@@ -28,7 +28,7 @@ export interface InitSession{
 }
 
 
-export type SessionEndReason = "time"|"trycount"|"sucess"|"inprogress"|"wrongcolor"|"playerdisconnect"|"sessionnolongerexists"|"connecterror"
+export type SessionEndReason = "time"|"trycount"|"sucess"|"inprogress"|"wrongcolor"|"playerdisconnect"|"sessionnolongerexists"|"connecterror"|"youleft"
 export interface SessionEndData{
     reason: SessionEndReason,
     sessionId:string|undefined,
