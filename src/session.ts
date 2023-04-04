@@ -189,7 +189,9 @@ export function onMessage(e:ws.MessageEvent, session:GameSession){
         return console.log("Could not find player but got message?")
     }
     try{
-        const data = JSON.parse(e.data.toString())
+        const str = e.data.toString()
+        if(str === 'ping')return;
+        const data = JSON.parse(str)
         const type = data.type
         if(type === "inputUpdate"){
             session.players.forEach(player => player.hasAccepted = false)

@@ -38,6 +38,7 @@ export class Game extends React.Component<{playerCount:number, color: ColorType,
     wantsToDisconnect:boolean
 }>{
     //timerInternvalId?:any
+    pingInterval:any
     webSocket:WebSocket
     reconnecting:boolean
     constructor(props:any){
@@ -95,10 +96,16 @@ export class Game extends React.Component<{playerCount:number, color: ColorType,
             console.log(reasonFromJson)
             this.props.onExit(reasonFromJson)
         }
+        this.webSocket.onopen = () => {
+            this.pingInterval = setInterval(() => {
+                this.webSocket?.send('ping')
+            }, 10_000)
+        }
         SharedState.use(this, PlayerColor)
     }
 
     componentWillUnmount(): void {
+        clearInterval(this.pingInterval)
         this.webSocket.close()
     }
 
