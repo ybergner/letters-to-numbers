@@ -1,5 +1,5 @@
 import http from 'http'
-import express, {Router} from 'express'
+import express from 'express'
 import ws from 'ws'
 import path from 'path'
 import { COLORS, ColorType, GameStep, SessionEndData, SessionEndReason } from './shared';
