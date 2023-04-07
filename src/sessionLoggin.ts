@@ -3,7 +3,6 @@ import { GameStep, SessionEndReason, TestTry } from "./shared";
 import fs, { mkdir } from 'fs'
 import path from 'path'
 
-
 interface SessionLog{
     results:number[],
     tries:TestTry[],
@@ -20,7 +19,7 @@ function mkDirFunc(dir:string){
 }
 
 const appPath = process.cwd()
-const logsFolder = path.join(appPath, "logs")
+export const logsFolder = path.join(appPath, "logs")
 console.log('Logs folder', logsFolder)
 mkDirFunc(logsFolder)
 

@@ -1,14 +1,17 @@
 import http from 'http'
-import express from 'express'
+import express, {Router} from 'express'
 import ws from 'ws'
 import path from 'path'
 import { COLORS, ColorType, GameStep, SessionEndData, SessionEndReason } from './shared';
 import { GameSession, handlePlayerConnect, generateNewSession } from './session';
 
 
+
 export const sessionMap : Map<string, GameSession> = new Map()
 
+
 const app = express();
+import router from './api'
 
 // Set up your express app as normal
 
@@ -70,6 +73,9 @@ const appPath = process.cwd()
 app.get('/', (_, res) => {
   res.sendFile(path.join(appPath, "index.html"))
 })
+
+app.use("/api", router)
+
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
