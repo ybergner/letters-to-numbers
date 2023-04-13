@@ -3,8 +3,9 @@ import { logSession } from './sessionLoggin'
 import { sendPlayer, SessionPlayer } from './sessionPlayer'
 import { v4 as uuidv4 } from 'uuid';
 import { ALL_LETTERS, ALL_NUMBERS, ColorType, GameStep, InitSession, ResultInputType, SessionEndData, SessionEndReason, TestTry } from './shared'
-import { GAME_START_TIME } from './consts'
 import { sessionMap } from './index';
+
+export var CLEAR_SOLUTIONS = false
 
 export interface GameSession{
     results:number[],
@@ -17,7 +18,9 @@ export interface GameSession{
     currentTextInput:string,
     resultInput:ResultInputType,
     gameStep:GameStep,
-    maxPlayers:number
+    maxPlayers:number,
+    started:Date,
+    logs: any[]
 }
 
 export function sessionSendAll(session:GameSession, data:any){
@@ -60,7 +63,9 @@ export function generateNewSession(maxPlayers:number){
         },
         results: generateSessionResult(),
         sessionTimer: 1,
-        testTries: []
+        testTries: [],
+        started: new Date(),
+        logs: []
     }
     sessionMap.set(newSession.id, newSession)
     return newSession
@@ -205,6 +210,11 @@ export function onMessage(e:ws.MessageEvent, session:GameSession){
                     text: session.currentTextInput
                 })
             })
+            session.logs.push({
+                type: "text",
+                step: session.gameStep,
+                newValue: session.currentTextInput
+            })
         }
         else if(type === "updateResultInput"){
             const letter = (data.letter as string).toUpperCase();
@@ -212,6 +222,10 @@ export function onMessage(e:ws.MessageEvent, session:GameSession){
             sessionSendAll(session, {
                 type,
                 letter,
+                value: data.value
+            })
+            session.logs.push({
+                type: "letter",
                 value: data.value
             })
             session.players.forEach(pl => pl.hasAccepted = false)
@@ -386,6 +400,27 @@ function acceptInput(session:GameSession, player: SessionPlayer){
                 return endSession(session, "trycount")
             }
             session.gameStep = GameStep.Equation
+            if(CLEAR_SOLUTIONS){
+                session.resultInput = {
+                    A: undefined,
+                    B: undefined,
+                    C: undefined,
+                    D: undefined,
+                    E: undefined,
+                    F: undefined,
+                    G: undefined,
+                    H: undefined,
+                    I: undefined,
+                    J: undefined
+                }
+                Object.keys(session.resultInput).forEach(letter => {
+                    sessionSendAll(session, {
+                        type: "updateResultInput",
+                        letter,
+                        value: undefined
+                    })
+                })
+            }
             sessionSendAll(session, {
                 type: 'setGameStep',
                 gameStep: session.gameStep
