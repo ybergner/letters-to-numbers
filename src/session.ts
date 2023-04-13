@@ -213,7 +213,8 @@ export function onMessage(e:ws.MessageEvent, session:GameSession){
             session.logs.push({
                 type: "text",
                 step: session.gameStep,
-                newValue: session.currentTextInput
+                newValue: session.currentTextInput,
+                playerColor: player.color
             })
         }
         else if(type === "updateResultInput"){
@@ -226,7 +227,8 @@ export function onMessage(e:ws.MessageEvent, session:GameSession){
             })
             session.logs.push({
                 type: "letter",
-                value: data.value
+                value: data.value,
+                playerColor: player.color
             })
             session.players.forEach(pl => pl.hasAccepted = false)
         }
