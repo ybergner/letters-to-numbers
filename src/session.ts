@@ -214,7 +214,8 @@ export function onMessage(e:ws.MessageEvent, session:GameSession){
                 type: "text",
                 step: session.gameStep,
                 newValue: session.currentTextInput,
-                playerColor: player.color
+                playerColor: player.color,
+                timestamp: new Date()
             })
         }
         else if(type === "updateResultInput"){
@@ -228,7 +229,8 @@ export function onMessage(e:ws.MessageEvent, session:GameSession){
             session.logs.push({
                 type: "letter",
                 value: data.value,
-                playerColor: player.color
+                playerColor: player.color,
+                timestamp: new Date()
             })
             session.players.forEach(pl => pl.hasAccepted = false)
         }
@@ -275,6 +277,13 @@ function acceptInput(session:GameSession, player: SessionPlayer){
     
     player.hasAccepted = true;
     let acceptedColors:string[] = session.players.filter(x => x.hasAccepted).map(pl => pl.color);
+    session.logs.push({
+        type: "accept",
+        step: session.gameStep,
+        playerColor: player.color,
+        timestamp: new Date(),
+        acceptedColors
+    })
     if(acceptedColors.length < session.players.length){
         sessionSendAll(session, {
             type: 'setAccepted',
