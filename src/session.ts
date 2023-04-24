@@ -228,6 +228,7 @@ export function onMessage(e:ws.MessageEvent, session:GameSession){
             })
             session.logs.push({
                 type: "letter",
+                letter,
                 value: data.value,
                 playerColor: player.color,
                 timestamp: new Date()
